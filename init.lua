@@ -12,17 +12,17 @@ vim.opt.relativenumber = true
 vim.opt.termguicolors = true
 vim.opt.undofile = true
 vim.opt.signcolumn = "yes"
-vim.o.complete = ".,o" -- use buffer and omnifunc
+vim.o.complete = ".,o"                       -- use buffer and omnifunc
 vim.o.completeopt = "fuzzy,menuone,noselect" -- add 'popup' for docs (sometimes)
 vim.o.autocomplete = true
 vim.o.pumheight = 7
+vim.opt.clipboard = "unnamedplus"
 
 vim.g.have_nerd_font = true
 
-
 local map = vim.keymap.set
 vim.g.mapleader = " "
-map('n', '<leader>o', ':update<CR> :source<CR>')
+map("n", "<leader>o", ":update<CR> :source<CR>")
 
 vim.pack.add({
 	{ src = "https://github.com/stevearc/oil.nvim" },
@@ -35,18 +35,18 @@ vim.pack.add({
 	"https://github.com/nvim-lua/plenary.nvim",
 	"https://github.com/nvimtools/none-ls.nvim",
 	"https://github.com/nvimtools/none-ls-extras.nvim",
-	"https://github.com/chomosuke/typst-preview.nvim"
+	"https://github.com/chomosuke/typst-preview.nvim",
 })
 
-require "mason".setup()
-require "oil".setup({
+require("mason").setup()
+require("oil").setup({
 	view_options = {
-		show_hidden = true
-	}
+		show_hidden = true,
+	},
 })
-require "mini.pick".setup()
-require("nvim-treesitter").setup({
-	ensure_installed = { "go", "lua", "vim", "tinymist" , "json"},
+require("mini.pick").setup()
+require("nvim-treesitter.configs").setup({
+	ensure_installed = { "go", "lua", "vim", "tinymist", "json", "templ", "html" },
 	auto_install = true,
 	highlight = {
 		enable = true,
@@ -54,50 +54,53 @@ require("nvim-treesitter").setup({
 	},
 	indent = {
 		enable = true,
-	}
+	},
 })
-
 
 vim.api.nvim_create_autocmd("PackChanged", {
 	desc = "Handle nvim-treesitter updates",
-	group = vim.api.nvim_create_augroup('nvim-treesitter-pack-changed-update-handler', { clear = true }),
+	group = vim.api.nvim_create_augroup("nvim-treesitter-pack-changed-update-handler", { clear = true }),
 	callback = function(event)
-		if event.data.kind == 'update' then
-			vim.notify('nvim-treesitter updated, running TSUpdate...', vim.log.levels.INFO)
+		if event.data.kind == "update" then
+			vim.notify("nvim-treesitter updated, running TSUpdate...", vim.log.levels.INFO)
 			---@diagnostic disable-next-line: param-type-mismatch
-			local ok = pcall(vim.cmd, 'TSUpdate')
+			local ok = pcall(vim.cmd, "TSUpdate")
 			if ok then
-				vim.notify('TSUpdate completed successfully!', vim.log.levels.INFO)
+				vim.notify("TSUpdate completed successfully!", vim.log.levels.INFO)
 			else
-				vim.notify('TSUpdate command not available yet, skipping', vim.log.levels.WARN)
+				vim.notify("TSUpdate command not available yet, skipping", vim.log.levels.WARN)
 			end
 		end
-	end
-
+	end,
 })
 
-
-map('n', '-', ":Oil<CR>")
-map('n', '<leader>lf', vim.lsp.buf.format)
+map("n", "-", ":Oil<CR>")
+map("n", "<leader>lf", vim.lsp.buf.format)
 
 -- mini.pick
-map('n', '<leader>f', ":Pick files<CR>")
-map('n', '<leader>h', ":Pick help<CR>")
+map("n", "<leader>f", ":Pick files<CR>")
+map("n", "<leader>h", ":Pick help<CR>")
 
-vim.lsp.enable({ "lua_ls", "gopls", "jsonls", "tinymist" })
+vim.lsp.enable({ "lua_ls", "gopls", "jsonls", "tinymist", "templ", "html" })
 
 -- colors
 
-require "everforest".setup()
+require("everforest").setup()
 vim.cmd("colorscheme everforest")
 
 -- snippets
 require("luasnip").setup({ enable_autosnippets = true })
 require("luasnip.loaders.from_lua").load({ paths = "~/.config/nvim/snippets/" })
 local ls = require("luasnip")
-map("i", "<C-e>", function() ls.expand_or_jump(1) end, { silent = true })
-map({ "i", "s" }, "<C-j>", function() ls.jump(1) end, { silent = true })
-map({ "i", "s" }, "<C-k>", function() ls.jump(-1) end, { silent = true })
+map("i", "<C-e>", function()
+	ls.expand_or_jump(1)
+end, { silent = true })
+map({ "i", "s" }, "<C-j>", function()
+	ls.jump(1)
+end, { silent = true })
+map({ "i", "s" }, "<C-k>", function()
+	ls.jump(-1)
+end, { silent = true })
 
 vim.api.nvim_create_autocmd("LspAttach", {
 	callback = function(args)
@@ -115,32 +118,31 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = 0 })
 
 		vim.lsp.completion.enable(true, args.data.client_id, args.buf, {
-      -- Optional formating of items
-      convert = function(item)
-        -- Remove leading misc chars for abbr name,
-        -- and cap field to 25 chars
-        --local abbr = item.label
-        --abbr = abbr:match("[%w_.]+.*") or abbr
-        --abbr = #abbr > 25 and abbr:sub(1, 24) .. "…" or abbr
-        --
-        -- Remove return value
-        --local menu = ""
+			-- Optional formating of items
+			convert = function(item)
+				-- Remove leading misc chars for abbr name,
+				-- and cap field to 25 chars
+				--local abbr = item.label
+				--abbr = abbr:match("[%w_.]+.*") or abbr
+				--abbr = #abbr > 25 and abbr:sub(1, 24) .. "…" or abbr
+				--
+				-- Remove return value
+				--local menu = ""
 
-        -- Only show abbr name, remove leading misc chars (bullets etc.),
-        -- and cap field to 15 chars
-        local abbr = item.label
-        abbr = abbr:gsub("%b()", ""):gsub("%b{}", "")
-        abbr = abbr:match("[%w_.]+.*") or abbr
-        abbr = #abbr > 15 and abbr:sub(1, 14) .. "…" or abbr
+				-- Only show abbr name, remove leading misc chars (bullets etc.),
+				-- and cap field to 15 chars
+				local abbr = item.label
+				abbr = abbr:gsub("%b()", ""):gsub("%b{}", "")
+				abbr = abbr:match("[%w_.]+.*") or abbr
+				abbr = #abbr > 15 and abbr:sub(1, 14) .. "…" or abbr
 
-        -- Cap return value field to 15 chars
-        local menu = item.detail or ""
-        menu = #menu > 15 and menu:sub(1, 14) .. "…" or menu
+				-- Cap return value field to 15 chars
+				local menu = item.detail or ""
+				menu = #menu > 15 and menu:sub(1, 14) .. "…" or menu
 
-        return { abbr = abbr, menu = menu }
-      end,
+				return { abbr = abbr, menu = menu }
+			end,
 		})
-
 	end,
 })
 
