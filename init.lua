@@ -35,7 +35,7 @@ vim.pack.add({
 	"https://github.com/nvim-lua/plenary.nvim",
 	"https://github.com/nvimtools/none-ls.nvim",
 	"https://github.com/nvimtools/none-ls-extras.nvim",
-	"https://github.com/chomosuke/typst-preview.nvim",
+	"https://github.com/MeanderingProgrammer/render-markdown.nvim",
 })
 
 require("mason").setup()
@@ -46,7 +46,7 @@ require("oil").setup({
 })
 require("mini.pick").setup()
 require("nvim-treesitter.configs").setup({
-	ensure_installed = { "go", "lua", "vim", "tinymist", "json", "templ", "html" },
+	ensure_installed = { "go", "lua", "vim", "json", "templ", "html" },
 	auto_install = true,
 	highlight = {
 		enable = true,
@@ -54,7 +54,12 @@ require("nvim-treesitter.configs").setup({
 	},
 	indent = {
 		enable = true,
+		disable = { "go" },
 	},
+})
+
+require("render-markdown").setup({
+	render_modes = { "n", "c", "t" },
 })
 
 vim.api.nvim_create_autocmd("PackChanged", {

@@ -1,0 +1,10 @@
+-- vim.opt.rtp:append("~/projects/monk-mode.nvim")
+-- -- vim.pack.add({
+-- -- 	{ src = vim.fn.expand("~/projects/monk-mode.nvim") },
+-- -- })
+--
+-- require("monk-mode").setup()
+--
+-- vim.keymap.set("n", "<leader>mm", function()
+-- 	require("monk-mode").toggle()
+-- end)

@@ -1,6 +1,9 @@
 vim.keymap.set("n", "<leader>p", ":TypstPreview<CR>", { buffer = 0 })
 vim.keymap.set({ "n", "x", "v" }, "j", "gj", { buffer = 0 })
 vim.keymap.set({ "n", "x", "v" }, "k", "gk", { buffer = 0 })
+vim.bo.formatprg = "typst fmt"
+
+
 
 vim.cmd([[
 	setlocal wrapmargin=0
