@@ -24,19 +24,22 @@ local map = vim.keymap.set
 vim.g.mapleader = " "
 map("n", "<leader>o", ":update<CR> :source<CR>")
 
-vim.pack.add({
-	{ src = "https://github.com/stevearc/oil.nvim" },
-	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "v0.9.3" },
-	{ src = "https://github.com/neovim/nvim-lspconfig" },
-	{ src = "https://github.com/mason-org/mason.nvim" },
-	{ src = "https://github.com/echasnovski/mini.pick" },
-	{ src = "https://github.com/L3MON4D3/LuaSnip" },
-	{ src = "https://github.com/neanias/everforest-nvim",         version = "main" },
-	"https://github.com/nvim-lua/plenary.nvim",
-	"https://github.com/nvimtools/none-ls.nvim",
-	"https://github.com/nvimtools/none-ls-extras.nvim",
-	"https://github.com/MeanderingProgrammer/render-markdown.nvim",
-})
+	vim.pack.add({
+		{ src = "https://github.com/stevearc/oil.nvim" },
+		{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "v0.9.3" },
+		{ src = "https://github.com/neovim/nvim-lspconfig" },
+		{ src = "https://github.com/mason-org/mason.nvim" },
+		{ src = "https://github.com/nvim-mini/mini.pick" },
+		{ src = "https://github.com/nvim-mini/mini.nvim" },
+		{ src = "https://github.com/L3MON4D3/LuaSnip" },
+		{ src = "https://github.com/chomosuke/typst-preview.nvim", version = "v1.*" },
+		{ src = "https://github.com/neanias/everforest-nvim",         version = "main" },
+		"https://github.com/nvim-lua/plenary.nvim",
+		"https://github.com/nvimtools/none-ls.nvim",
+		"https://github.com/nvimtools/none-ls-extras.nvim",
+		"https://github.com/MeanderingProgrammer/render-markdown.nvim",
+		{ src = "https://github.com/ibhagwan/fzf-lua" },
+	})
 
 require("mason").setup()
 require("oil").setup({
@@ -45,6 +48,7 @@ require("oil").setup({
 	},
 })
 require("mini.pick").setup()
+require("fzf-lua").setup()
 require("nvim-treesitter.configs").setup({
 	ensure_installed = { "go", "lua", "vim", "json", "templ", "html" },
 	auto_install = true,
@@ -83,8 +87,12 @@ map("n", "-", ":Oil<CR>")
 map("n", "<leader>lf", vim.lsp.buf.format)
 
 -- mini.pick
-map("n", "<leader>f", ":Pick files<CR>")
+-- map("n", "<leader>ff", ":Pick files<CR>")
 map("n", "<leader>h", ":Pick help<CR>")
+map("n", "<leader>ff", ":FzfLua files<CR>")
+map("n", "<leader>fg", ":FzfLua grep_visual<CR>")
+
+-- mini.fuzzy
 
 vim.lsp.enable({ "lua_ls", "gopls", "jsonls", "tinymist", "templ", "html" })
 
