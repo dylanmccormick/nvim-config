@@ -24,22 +24,22 @@ local map = vim.keymap.set
 vim.g.mapleader = " "
 map("n", "<leader>o", ":update<CR> :source<CR>")
 
-	vim.pack.add({
-		{ src = "https://github.com/stevearc/oil.nvim" },
-		{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "v0.9.3" },
-		{ src = "https://github.com/neovim/nvim-lspconfig" },
-		{ src = "https://github.com/mason-org/mason.nvim" },
-		{ src = "https://github.com/nvim-mini/mini.pick" },
-		{ src = "https://github.com/nvim-mini/mini.nvim" },
-		{ src = "https://github.com/L3MON4D3/LuaSnip" },
-		{ src = "https://github.com/chomosuke/typst-preview.nvim", version = "v1.*" },
-		{ src = "https://github.com/neanias/everforest-nvim",         version = "main" },
-		"https://github.com/nvim-lua/plenary.nvim",
-		"https://github.com/nvimtools/none-ls.nvim",
-		"https://github.com/nvimtools/none-ls-extras.nvim",
-		"https://github.com/MeanderingProgrammer/render-markdown.nvim",
-		{ src = "https://github.com/ibhagwan/fzf-lua" },
-	})
+vim.pack.add({
+	{ src = "https://github.com/stevearc/oil.nvim" },
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
+	{ src = "https://github.com/neovim/nvim-lspconfig" },
+	{ src = "https://github.com/mason-org/mason.nvim" },
+	{ src = "https://github.com/nvim-mini/mini.pick" },
+	{ src = "https://github.com/nvim-mini/mini.nvim" },
+	{ src = "https://github.com/L3MON4D3/LuaSnip" },
+	-- { src = "https://github.com/chomosuke/typst-preview.nvim", version = "v1.*" },
+	{ src = "https://github.com/neanias/everforest-nvim",        version = "main" },
+	"https://github.com/nvim-lua/plenary.nvim",
+	"https://github.com/nvimtools/none-ls.nvim",
+	"https://github.com/nvimtools/none-ls-extras.nvim",
+	"https://github.com/MeanderingProgrammer/render-markdown.nvim",
+	{ src = "https://github.com/ibhagwan/fzf-lua" },
+})
 
 require("mason").setup()
 require("oil").setup({
@@ -49,17 +49,21 @@ require("oil").setup({
 })
 require("mini.pick").setup()
 require("fzf-lua").setup()
-require("nvim-treesitter.configs").setup({
-	ensure_installed = { "go", "lua", "vim", "json", "templ", "html" },
-	auto_install = true,
-	highlight = {
-		enable = true,
-		additional_vim_regex_highlighting = false,
-	},
-	indent = {
-		enable = true,
-		disable = { "go" },
-	},
+-- Setup nvim-treesitter (modern version)
+require("nvim-treesitter").setup({
+	install_dir = vim.fn.stdpath("data") .. "/site",
+})
+
+-- Install required parsers
+require("nvim-treesitter").install({ "lua", "vim", "json", "go", "html", "rust" })
+
+-- Enable treesitter highlighting for supported filetypes
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "lua", "vim", "json", "go", "html" },
+	callback = function()
+		pcall(vim.treesitter.start)
+	end,
+	desc = "Enable treesitter highlighting",
 })
 
 require("render-markdown").setup({
@@ -94,7 +98,7 @@ map("n", "<leader>fg", ":FzfLua grep_visual<CR>")
 
 -- mini.fuzzy
 
-vim.lsp.enable({ "lua_ls", "gopls", "jsonls", "tinymist", "templ", "html" })
+vim.lsp.enable({ "lua_ls", "gopls", "jsonls", "tinymist", "templ", "html", "rust_analyzer" })
 
 -- colors
 
@@ -159,4 +163,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
+vim.keymap.set("n", "<leader>qf", function()
+	if vim.bo.buftype == "quickfix" then
+		vim.cmd("cclose")
+	else
+		vim.cmd("copen")
+	end
+end, { desc = "Toggle quickfix list" })
 require("plugins")
